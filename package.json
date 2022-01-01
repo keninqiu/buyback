@@ -1,0 +1,33 @@
+{
+  "name": "kanbanjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.23.0",
+    "bchaddrjs": "^0.5.2",
+    "bignumber.js": "^9.0.1",
+    "bip32": "^2.0.6",
+    "bip39": "^3.0.4",
+    "bitcoinjs-lib": "^5.2.0",
+    "bs58": "^4.0.1",
+    "create-hash": "^1.2.0",
+    "crypto-js": "^4.1.1",
+    "eth-lib": "^0.1.29",
+    "elliptic": "^6.5.4",
+    "ethereumjs-common": "^1.5.2",
+    "ethereumjs-tx": "^2.1.2",
+    "ethereumjs-util": "^6.2.1",
+    "ethereumjs-wallet": "^1.0.2",
+    "ethers": "^5.4.4",
+    
+    "web3": "^1.6.1",
+    "web3-eth-abi": "^1.6.1"
+  }
+}
