@@ -21,8 +21,10 @@ const main = async function() {
 
     console.log('balances33333=', balances);
     */
+    /*
     let ret = await kanban.deposit('TRX', null, 6, privateKeyTRX, addressTRX, privateKey, address, 0.1214, {});
     console.log('ret===', ret);
+    */
     /*
     const balances = await kanban.getWalletBalances( //钱包数量和价格
         address, addressBTC, addressETH, addressTRX, addressLTC, addressDOGE, addressBCH
@@ -322,7 +324,7 @@ console.log('addressETH==', addressETH);
 	"notify_url": "https://7star.xiaomustang.com//api/notice/store_check"
     */
 
-    /*
+    
     const notify_url = "https://7star.xiaomustang.com//api/notice/store_check";
     // data: store对象
     const resp = await kanban.createStore( // 生成商店
@@ -349,7 +351,7 @@ console.log('addressETH==', addressETH);
         hideOnStore,
         notify_url
     );
-    //console.log('resp==', resp);
+    console.log('resp==', resp);
     if(resp && resp.ok) {
 
         const store = resp._body;
@@ -357,7 +359,10 @@ console.log('addressETH==', addressETH);
     } else {
         console.log('resp===', resp);
     }
-    */
+    
+    const storeId = '61cbeb9e56c2fb67f608194b';
+    const deleted = await kanban.deleteStore(privateKey, storeId);
+    console.log('deleted===', deleted);
     /*
     const status = await kanban.getStoreStatus(address);
     //address: store owner的钱包地址

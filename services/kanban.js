@@ -24,6 +24,7 @@ var BIP39 = require('bip39');
 //var bitcoinMessage = require('bitcoinjs-message');
 const bchaddr = require('bchaddrjs');
 const EthereumTx = require('ethereumjs-tx').Transaction;
+const Account = require('eth-lib/lib/account');
 /*
 const HttpProvider = TronWeb.providers.HttpProvider;
 const fullNode = new HttpProvider('https://api.trongrid.io');
@@ -769,11 +770,9 @@ module.exports = {
         const coinPoolAddress = await module.exports.getCoinPoolAddress();
         const abiData = module.exports.getDepositFuncABI(updatedCoinType, txHash, amountInLink, addressInKanban, signedMessage);
 
-        console.log('abiData===', abiData);
         const txKanbanHex = await module.exports.getExecSmartContractHexByData(fabPrivateKey, fabAddress, coinPoolAddress, abiData);
 
         const submited = await module.exports.submitDeposit(txHex, txKanbanHex);
-        console.log('submited=', submited);
         return submited;
         
     },
@@ -1470,6 +1469,70 @@ module.exports = {
         console.log('args===', args);
         const ret = await module.exports.execSmartContract(privateKey, address, feeChargerSmartContractAddress, abi, args);
         return ret;
+    },
+
+    hashKanbanMessage(data) {
+        const web3 = new Web3();
+        var messageHex = web3.utils.isHexStrict(data) ? data : web3.utils.utf8ToHex(data);
+        var messageBytes = web3.utils.hexToBytes(messageHex);
+        var messageBuffer = Buffer.from(messageBytes);
+        var preamble = '\x17Kanban Signed Message:\n' + messageBytes.length;
+        var preambleBuffer = Buffer.from(preamble);
+        var ethMessage = Buffer.concat([preambleBuffer, messageBuffer]);
+        var hash = Hash.keccak256s(ethMessage);    
+        console.log('hash1=', hash);
+        return hash;
+    },
+    
+    signKanbanMessageWithPrivateKey: (message, privateKey) => {
+        var hash = module.exports.hashKanbanMessage(message);
+        return module.exports.signKanbanMessageHashWithPrivateKey(hash, privateKey);
+    },
+    
+    signKanbanMessageHashWithPrivateKey(hash, privateKey) {
+    
+        const privateKeyHex = `0x${privateKey.toString('hex')}`;
+        // 64 hex characters + hex-prefix
+        if (privateKeyHex.length !== 66) {
+            throw new Error("Private key must be 32 bytes long");
+        }    
+        var signature = Account.sign(hash, privateKeyHex);
+        var vrs = Account.decodeSignature(signature);
+        return {
+            messageHash: hash,
+            v: vrs[0],
+            r: vrs[1],
+            s: vrs[2],
+            signature: signature
+        };
+    },
+
+
+    signJsonData: (privateKey, data) => {
+
+        var queryString = Object.keys(data).filter((k) => (data[k] != null) && (data[k] != undefined))
+        .map(key => key + '=' + (typeof data[key] === 'string' ? data[key] : JSON.stringify(data[key]))).sort().join('&');
+
+        const signature = module.exports.signKanbanMessageWithPrivateKey(queryString, privateKey);
+        return signature;  
+    },
+    deleteStore: async (privateKey, storeId) => {
+        const data = {
+            id: storeId
+          };
+          const sig = module.exports.signJsonData(privateKey, data);
+          data['sig'] = sig.signature;  
+      
+          const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + 'stores/Delete';
+
+          let resp = '';
+          try {
+              const response = await axios.post(url, data);
+              resp = response.data;
+  
+          }catch (err) {
+          }
+          return resp;
     },
     createStore: async (
         privateKey,
@@ -3033,7 +3096,7 @@ module.exports = {
         delete data.sig;
         var msg = Object.keys(data).filter((k) => (data[k] != null) && (data[k] != undefined))
         .map(key => key + '=' + (typeof data[key] === 'string' ? data[key] : JSON.stringify(data[key]))).sort().join('&');
-        console.log('msg===', msg);
+
         var hash = module.exports.hashKanbanMessage(msg);   
 
         
@@ -3051,7 +3114,6 @@ module.exports = {
     },
 
     getAddressFromPublicKeyBuffer: (pubKey) => {
-        console.log('pubKey=', pubKey);
         const pubkeyBuf = Buffer.concat([Buffer.from('04', 'hex'), pubKey]);
         const pubkey = Btc.ECPair.fromPublicKey(pubkeyBuf);
         const network = secret.production ? Btc.networks.bitcoin : Btc.networks.testnet;
