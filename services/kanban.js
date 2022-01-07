@@ -2331,6 +2331,29 @@ module.exports = {
         return isValid;
     },    
 
+    isValidMember: async(address) => {
+        const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + '7star-ref/isValidMember/' + address;
+        try {
+            const response = await axios.get(url);
+
+            resp = response.data;
+
+        }catch (err) {
+        }
+        return resp;
+    },
+    get7StarInfo:  async(address) => {
+        const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + '7star-ref/' + address;
+        try {
+            const response = await axios.get(url);
+
+            resp = response.data;
+
+        }catch (err) {
+        }
+        return resp;
+    },
+
     kanbanCall: async (to, abihex) => {
         const data = {
             transactionOptions: {

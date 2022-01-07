@@ -14,6 +14,8 @@ const main = async function() {
         privateKeyBCH, addressBCH
     } = kanban.getWalletIdentity(mnemonic);
 
+    const info = await kanban.get7StarInfo(address);
+    console.log('info===', info);
     /*
     const balances = await kanban.getWalletBalances( //钱包数量和价格
         address, addressBTC, addressETH, addressTRX, addressLTC, addressDOGE, addressBCH
@@ -324,7 +326,7 @@ console.log('addressETH==', addressETH);
 	"notify_url": "https://7star.xiaomustang.com//api/notice/store_check"
     */
 
-    
+    /*
     const notify_url = "https://7star.xiaomustang.com//api/notice/store_check";
     // data: store对象
     const resp = await kanban.createStore( // 生成商店
@@ -363,6 +365,7 @@ console.log('addressETH==', addressETH);
     const storeId = '61cbeb9e56c2fb67f608194b';
     const deleted = await kanban.deleteStore(privateKey, storeId);
     console.log('deleted===', deleted);
+    */
     /*
     const status = await kanban.getStoreStatus(address);
     //address: store owner的钱包地址
