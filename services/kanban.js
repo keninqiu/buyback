@@ -1291,22 +1291,28 @@ module.exports = {
 
      getStoreStatus: async (address) => {
         let status = -1; 
+        const store = await module.exports.getStore(address);
+        if(store) {
+            status = store.status;
+        }
+        return status;
+     },
+
+     getStore: async (address) => {
         const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + 'stores/ownedBy/' + address;
         let resp = '';
+        let store;
         try {
             const response = await axios.get(url);
             resp = response.data;
             if(resp.ok && resp._body && resp._body.length > 0) {
-                const store = resp._body[resp._body.length - 1];
-                status = store.status;
+                store = resp._body[resp._body.length - 1];
             }
-
         }catch (err) {
         }
 
-        return status;
+        return store;
      },
-
      refund: async (privateKey, feeChargerSmartContractAddress, orderId) => {
          console.log('privateKey=', privateKey);
          console.log('feeChargerSmartContractAddress=', feeChargerSmartContractAddress);
@@ -1533,6 +1539,112 @@ module.exports = {
           }catch (err) {
           }
           return resp;
+    },
+    updateStore: async (
+        privateKey,
+        id,
+        name,
+        nameChinese,
+        addr,
+        addrChinese,
+        contactName,
+        contactNameChinese,
+        phone,
+        fax,
+        email,
+        website,
+        openTime,
+        closeTime,
+        businessContents,
+        businessContentsChinese,
+        coin,
+        giveAwayRate,
+        taxRate,
+        image,
+        hideOnStore
+    ) => {
+        const data = { };
+        if(name || nameChinese) {
+            data.name = {};
+            if(name) {
+                data.name.en = name;
+            } 
+            if(nameChinese) {
+                data.name.sc = nameChinese;
+            }
+        }
+        if(addr || addrChinese) {
+            data.address = {};
+            if(addr) {
+                data.address.en = addr;
+            } 
+            if(addrChinese) {
+                data.address.sc = addrChinese;
+            }
+        }
+        if(contactName || contactNameChinese) {
+            data.contactName = {};
+            if(contactName) {
+                data.contactName.en = contactName;
+            } 
+            if(contactNameChinese) {
+                data.contactName.sc = contactNameChinese;
+            }
+        }
+        if(phone) {
+            data.phone = phone;
+        }
+        if(fax) {
+            data.fax = fax;
+        }
+        if(email) {
+            data.email = email;
+        }
+        if(website) {
+            data.website = website;
+        }
+        if(openTime) {
+            data.openTime = openTime;
+        }
+        if(closeTime) {
+            data.closeTime = closeTime;
+        }
+        if(businessContents || businessContentsChinese) {
+            data.businessContents = {};
+            if(businessContents) {
+                data.businessContents.en = businessContents;
+            } 
+            if(businessContentsChinese) {
+                data.businessContents.sc = businessContentsChinese;
+            }
+        }
+        if(giveAwayRate) {
+            data.giveAwayRate = giveAwayRate;
+        }
+        if(taxRate) {
+            data.taxRate = taxRate;
+        }
+        if(image) {
+            data.image = image;
+        }
+        if(hideOnStore) {
+            data.hideOnStore = hideOnStore;
+        }
+        if(coin) {
+            data.coin = coin;
+        }
+        const sig = module.exports.signJsonData(privateKey, data);
+        data['sig'] = sig.signature;  
+
+        const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + 'stores/Update/' + id;
+        let resp = '';
+        try {
+            const response = await axios.post(url, data);
+            resp = response.data;
+
+        }catch (err) {
+        }
+        return resp;
     },
     createStore: async (
         privateKey,
@@ -2095,6 +2207,7 @@ module.exports = {
         return orderId;
     },
     getCoinTypeIdByName: (name) => {
+        console.log('name ===', name);
         name = name.toUpperCase();
         for (let i = 0; i < coin_list.length; i++) {
             const coin = coin_list[i];

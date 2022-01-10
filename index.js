@@ -282,13 +282,13 @@ console.log('addressETH==', addressETH);
     const hideOnStore = true;
     */
    
-    const name = '测试';
-    const nameChinese = '测试';
+    const name = '测试22';
+    const nameChinese = '测试33';
     const addr = '山东省青岛市黄岛区薛家岛街道昆泉星港凤海苑';
     const addrChinese = '山东省青岛市黄岛区薛家岛街道昆泉星港凤海苑';
     const contactName = '测试';
     const contactNameChinese = '测试';
-    const phone = '13012410050';
+    const phone = null;
     const fax = '053288888888';
     const email = '308178561@qq.com';
     const website = '';
@@ -299,9 +299,35 @@ console.log('addressETH==', addressETH);
     const coin = 'USDT';
     const giveAwayRate = "13";
     const taxRate = "13";
-    const refAddress = 'n1eXG5oe6wJ6h43akutyGfphqQsY1UfAUR';
     const image = '';
     const hideOnStore = true;  
+
+
+    const store = await kanban.getStore(address);
+    const resp = await kanban.updateStore( // 修改商店
+        privateKey,
+        store._id,
+        name,
+        nameChinese,
+        addr,
+        addrChinese,
+        contactName,
+        contactNameChinese,
+        phone,
+        fax,
+        email,
+        website,
+        openTime,
+        closeTime,
+        businessContents,
+        businessContentsChinese,
+        coin,
+        giveAwayRate,
+        taxRate,
+        image,
+        hideOnStore
+    );
+    console.log('resppp=', resp);
     /*
     	"name": "测试",
 	"nameChinese": "测试",
