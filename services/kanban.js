@@ -2414,7 +2414,6 @@ module.exports = {
  
     isValidInCustomerReferral: async (address) => {
         const to = module.exports.getSevenStarCustomerReferralSmartContractAddress();
-        console.log('4to=', to);
         const abihex = module.exports.getGeneralFunctionABI(
             {
                 "constant": true,
@@ -2446,6 +2445,7 @@ module.exports = {
 
     isValidMember: async(address) => {
         const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + '7star-ref/isValidMember/' + address;
+        console.log('url====', url);
         try {
             const response = await axios.get(url);
 

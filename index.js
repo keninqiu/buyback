@@ -16,6 +16,10 @@ const main = async function() {
 
     const info = await kanban.get7StarInfo(address);
     console.log('info===', info);
+
+    address = '186UP7dhSaLo833xNVP8UU14KLXzeWQjUU';
+    const isValid = await kanban.isValidMember(address);
+    console.log('isValid====', isValid);
     /*
     const balances = await kanban.getWalletBalances( //钱包数量和价格
         address, addressBTC, addressETH, addressTRX, addressLTC, addressDOGE, addressBCH
