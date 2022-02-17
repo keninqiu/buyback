@@ -3,7 +3,7 @@ var secret = require('./services/secret.json');
 const config = require('./services/config');
 
 const main = async function() {
-    const mnemonic = 'dune stem onion cliff equip seek kiwi salute area elegant atom injury';
+    const mnemonic = "dune stem onion cliff equip seek kiwi salute area elegant atom injury";
     let { 
         privateKey, address, 
         privateKeyBTC, addressBTC, 
@@ -14,12 +14,52 @@ const main = async function() {
         privateKeyBCH, addressBCH
     } = kanban.getWalletIdentity(mnemonic);
 
+    const body = {
+        currency: "USDT",
+        items: [
+            {
+                title: "apple", 
+                giveAwayRate: 12, 
+                taxRate: 13, 
+                lockedDays: 366, 
+                price: 10, 
+                quantity: 2
+            },
+            {
+                title: "balance", 
+                giveAwayRate: 12, 
+                taxRate: 13, 
+                lockedDays: 90, 
+                price: 5, 
+                quantity: 3
+            }],
+        store: "620bc00f2670171289caee54",
+        totalSale: 35,
+        totalTax: 4.55
+    };
+    const order = await kanban.createOrder(body);
+    console.log('order=', order);
+
+    const qrcode1 = kanban.generateQrcodeByOrder(order._id);
+    const qrcode2 = kanban.generateQrcodeByStore("620bc00f2670171289caee54");
+
+    console.log('qrcode1===', qrcode1);
+    console.log('qrcode2===', qrcode2);
+
+    const pay1 = await kanban.payOrder(privateKey, address, order._id);
+    console.log('pay1=', pay1);
+
+    const pay2 = await kanban.payStore(privateKey, address, "620bc00f2670171289caee54", 'USDT', 1000, 'pay for tutorfee');
+    console.log('pay2=', pay2);
+    /*
     const info = await kanban.get7StarInfo(address);
     console.log('info===', info);
 
-    address = '186UP7dhSaLo833xNVP8UU14KLXzeWQjUU';
+    //address = '186UP7dhSaLo833xNVP8UU14KLXzeWQjUU';
     const isValid = await kanban.isValidMember(address);
     console.log('isValid====', isValid);
+    */
+
     /*
     const balances = await kanban.getWalletBalances( //钱包数量和价格
         address, addressBTC, addressETH, addressTRX, addressLTC, addressDOGE, addressBCH
@@ -331,7 +371,7 @@ console.log('addressETH==', addressETH);
         image,
         hideOnStore
     );
-    console.log('resppp=', resp);
+    //console.log('resppp=', resp);
     /*
     	"name": "测试",
 	"nameChinese": "测试",

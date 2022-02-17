@@ -1313,6 +1313,23 @@ module.exports = {
 
         return store;
      },
+
+     getStoreById: async (id) => {
+        const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + 'stores/' + id;
+        let resp = '';
+        let store;
+        try {
+            const response = await axios.get(url);
+            resp = response.data;
+            if(resp.ok && resp._body) {
+                store = resp._body;
+            }
+        }catch (err) {
+        }
+
+        return store;
+     },
+
      refund: async (privateKey, feeChargerSmartContractAddress, orderId) => {
          console.log('privateKey=', privateKey);
          console.log('feeChargerSmartContractAddress=', feeChargerSmartContractAddress);
@@ -2218,6 +2235,141 @@ module.exports = {
         return -1;
     },  
 
+    generateQrcodeByOrder: (orderId) => {
+        const tx = {
+            i: orderId
+          };
+          const qrCodeData = JSON.stringify(tx);
+          return qrCodeData;
+    },
+
+    get7StarPayOrder: async(id, address) => {
+
+        let url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + 'orders/' + id + '/7starpay';
+        const data = {
+            address
+         };
+        let order;
+        try {
+            const response = await axios.post(url, data);
+
+            resp = response.data;
+            
+            if(resp && resp.ok) {
+                order = resp._body;
+            }
+
+        }catch (err) {
+        }
+        return order;
+    },
+
+    payOrder: async (privateKey, address, orderId) => {
+        const order = await module.exports.get7StarPayOrder(orderId, address);
+        
+        const abi = {
+            "inputs": [
+              {
+                "internalType": "bytes32",
+                "name": "_orderID",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "_paidCoin",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint256",
+                "name": "_totalAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "_totalTax",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address[]",
+                "name": "_regionalAgents",
+                "type": "address[]"
+              },
+              {
+                "internalType": "bytes32[]",
+                "name": "_rewardBeneficiary",
+                "type": "bytes32[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "_rewardInfo",
+                "type": "bytes"
+              }
+            ],
+            "name": "chargeFundsWithFee",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          };
+          const args = [
+            '0x' + orderId,
+            module.exports.getCoinTypeIdByName(order.currency),
+            '0x' + new BigNumber(order.totalAmount).shiftedBy(18).toString(16),
+            '0x' + new BigNumber(order.totalTax).shiftedBy(18).toString(16),
+            order.regionalAgents,
+            order.rewardBeneficiary,
+            order.rewardInfo
+          ];
+          const to = order.feeChargerSmartContractAddress;
+          const ret = await module.exports.execSmartContract(privateKey, address, to, abi, args);
+          return ret;
+    },
+
+
+    payStore: async (privateKey, address, storeId, currency, amount, memo) => {
+        const store = await module.exports.getStoreById(storeId);
+        if(!store || store.status != 1) {
+            return {
+                ok: false,
+                _body: 'Store is not existed or not approved'
+              }
+        }
+        const giveAwayRate = store.giveAwayRate;
+        const lockedDays = store.lockedDays;
+
+        const body = {
+            currency: currency,
+            items: [
+                {
+                    title: memo, 
+                    giveAwayRate: giveAwayRate, 
+                    taxRate: 0, 
+                    lockedDays: lockedDays, 
+                    price: amount, 
+                    quantity: 1
+                }
+            ],
+            store: storeId,
+            totalSale: amount,
+            totalTax: 0
+        };  
+        const order = await module.exports.createOrder(body);
+        return module.exports.payOrder(privateKey, address, order._id);
+    },
+
+    generateQrcodeByStore: (storeId) => {
+        const tx = {
+            s: storeId
+          };
+          const qrCodeData = JSON.stringify(tx);
+          return qrCodeData;
+    },
+
     generateQrcode:(feeChargerSmartContractAddress, orderId, coin, totalAmount, taxAmount) => {
         let func = {
             "constant": false,
@@ -2442,6 +2594,22 @@ module.exports = {
         const isValid = (data != null) && (data != undefined) && (data != '0x0000000000000000000000000000000000000000000000000000000000000000');
         return isValid;
     },    
+
+    createOrder: async (body) => {
+        let order;
+        const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + 'orders/7starpay/create';
+        console.log('url====', url);
+        try {
+            const response = await axios.post(url, body);
+
+            resp = response.data;
+            if(resp && resp.ok) {
+                order = resp._body;
+            }
+        }catch (err) {
+        }
+        return order; 
+    },
 
     isValidMember: async(address) => {
         const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + '7star-ref/isValidMember/' + address;
