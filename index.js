@@ -35,7 +35,8 @@ const main = async function() {
             }],
         store: "620bc00f2670171289caee54",
         totalSale: 35,
-        totalTax: 4.55
+        totalTax: 4.55,
+        totalShipping: 20
     };
     const order = await kanban.createOrder(body);
     //创建订单
