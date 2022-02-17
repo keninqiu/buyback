@@ -38,18 +38,24 @@ const main = async function() {
         totalTax: 4.55
     };
     const order = await kanban.createOrder(body);
+    //创建订单
     console.log('order=', order);
 
     const qrcode1 = kanban.generateQrcodeByOrder(order._id);
+    //生成订单二维码
+
     const qrcode2 = kanban.generateQrcodeByStore("620bc00f2670171289caee54");
+    //生成商店二维码
 
     console.log('qrcode1===', qrcode1);
     console.log('qrcode2===', qrcode2);
 
     const pay1 = await kanban.payOrder(privateKey, address, order._id);
+    //支付订单
     console.log('pay1=', pay1);
 
     const pay2 = await kanban.payStore(privateKey, address, "620bc00f2670171289caee54", 'USDT', 1000, 'pay for tutorfee');
+    //向商店付款
     console.log('pay2=', pay2);
     /*
     const info = await kanban.get7StarInfo(address);
