@@ -58,6 +58,10 @@ const main = async function() {
     const pay2 = await kanban.payStore(privateKey, address, "620bc00f2670171289caee54", 'USDT', 1000, 'pay for tutorfee');
     //向商店付款
     console.log('pay2=', pay2);
+
+    const order2 = await kanban.getOrder(order._id);
+    //paymentStatus: Number, //0: waiting for pay, 1: paid already, 2: finished, 3: cancelled, 4: frozened, 5: request refund, 6: refunded
+    console.log('order2=', order2);
     /*
     const info = await kanban.get7StarInfo(address);
     console.log('info===', info);

@@ -1330,6 +1330,22 @@ module.exports = {
         return store;
      },
 
+     getOrder: async (orderId) => {
+        const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + 'orders/public/' + orderId;
+        console.log('url===', url);
+        let resp = '';
+        let order;
+        try {
+            const response = await axios.get(url);
+            resp = response.data;
+            if(resp.ok && resp._body) {
+                order = resp._body;
+            }
+        }catch (err) {
+        }
+
+        return order;
+     },
      refund: async (privateKey, feeChargerSmartContractAddress, orderId) => {
          console.log('privateKey=', privateKey);
          console.log('feeChargerSmartContractAddress=', feeChargerSmartContractAddress);
