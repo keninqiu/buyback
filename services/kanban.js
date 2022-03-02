@@ -2124,6 +2124,7 @@ module.exports = {
     },
     getExecSmartContractHex: async(privateKey, address, smartContractAddress, abi, args, nonce = -1) => {
         const kanbanData = module.exports.getGeneralFunctionABI(abi, args);
+        console.log('kanbanData===', kanbanData);
         return module.exports.getExecSmartContractHexByData(privateKey, address, smartContractAddress, kanbanData, nonce);
     },
     formCreateSmartContractABI: (abiArray, bytecode, args) => {
@@ -2252,11 +2253,33 @@ module.exports = {
     },  
 
     generateQrcodeByOrder: (orderId) => {
-        const tx = {
-            i: orderId
-          };
-          const qrCodeData = JSON.stringify(tx);
-          return qrCodeData;
+        const qrCodeData = 'i=' + orderId;
+        return qrCodeData;
+    },
+
+    generateQrcodeByOrderTemplate: (orderTemplateId) => {
+        const qrCodeData = 't=' + orderTemplateId;
+        return qrCodeData;
+    },
+
+    create7StarPayOrderFromTemplate: async(orderTemplateId) => {
+        let url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + 'orders/7starpay/createFromTemplate';
+        const data = {
+            id: orderTemplateId
+         };
+        let order;
+        try {
+            const response = await axios.post(url, data);
+
+            resp = response.data;
+            
+            if(resp && resp.ok) {
+                order = resp._body;
+            }
+
+        }catch (err) {
+        }
+        return order;
     },
 
     get7StarPayOrder: async(id, address) => {
@@ -2280,9 +2303,16 @@ module.exports = {
         return order;
     },
 
+    payOrderTemplate: async (privateKey, address, orderTemplateId) => {
+        const newOrder = await module.exports.create7StarPayOrderFromTemplate(orderTemplateId);
+        if(newOrder) {
+            return await module.exports.payOrder(privateKey, address, newOrder._id);
+        }
+    },
+
     payOrder: async (privateKey, address, orderId) => {
         const order = await module.exports.get7StarPayOrder(orderId, address);
-        
+
         const abi = {
             "inputs": [
               {
@@ -2379,11 +2409,8 @@ module.exports = {
     },
 
     generateQrcodeByStore: (storeId) => {
-        const tx = {
-            s: storeId
-          };
-          const qrCodeData = JSON.stringify(tx);
-          return qrCodeData;
+        const qrCodeData = 's=' + storeId;
+        return qrCodeData;
     },
 
     generateQrcode:(feeChargerSmartContractAddress, orderId, coin, totalAmount, taxAmount) => {
@@ -2614,6 +2641,22 @@ module.exports = {
     createOrder: async (body) => {
         let order;
         const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + 'orders/7starpay/create';
+        console.log('url====', url);
+        try {
+            const response = await axios.post(url, body);
+
+            resp = response.data;
+            if(resp && resp.ok) {
+                order = resp._body;
+            }
+        }catch (err) {
+        }
+        return order; 
+    },
+
+    createOrderTemplate: async (body) => {
+        let order;
+        const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + 'order-templates/7starpay/create';
         console.log('url====', url);
         try {
             const response = await axios.post(url, body);

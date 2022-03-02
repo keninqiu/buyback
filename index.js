@@ -42,19 +42,31 @@ const main = async function() {
     //创建订单
     console.log('order=', order);
 
+    const orderTemplate = await kanban.createOrderTemplate(body);
+    //创建订单模版
+
     const qrcode1 = kanban.generateQrcodeByOrder(order._id);
     //生成订单二维码
+
+    const qrcode3 = kanban.generateQrcodeByOrderTemplate(orderTemplate._id);
+    //生成订单模版二维码
 
     const qrcode2 = kanban.generateQrcodeByStore("620bc00f2670171289caee54");
     //生成商店二维码
 
     console.log('qrcode1===', qrcode1);
     console.log('qrcode2===', qrcode2);
+    console.log('qrcode3===', qrcode3);
 
-    const pay1 = await kanban.payOrder(privateKey, address, order._id);
+    //const orderid = order._id;
+    const orderid = '620d871b2d08661afbfcaa65';
+    const pay1 = await kanban.payOrder(privateKey, address, orderid);
     //支付订单
     console.log('pay1=', pay1);
 
+    const pay3 = await kanban.payOrderTemplate(privateKey, address, orderTemplate._id);
+    console.log('pay3===', pay3);
+    /*
     const pay2 = await kanban.payStore(privateKey, address, "620bc00f2670171289caee54", 'USDT', 1000, 'pay for tutorfee');
     //向商店付款
     console.log('pay2=', pay2);
@@ -62,6 +74,7 @@ const main = async function() {
     const order2 = await kanban.getOrder(order._id);
     //paymentStatus: Number, //0: waiting for pay, 1: paid already, 2: finished, 3: cancelled, 4: frozened, 5: request refund, 6: refunded
     console.log('order2=', order2);
+    */
     /*
     const info = await kanban.get7StarInfo(address);
     console.log('info===', info);
