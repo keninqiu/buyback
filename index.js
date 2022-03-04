@@ -3,7 +3,7 @@ var secret = require('./services/secret.json');
 const config = require('./services/config');
 
 const main = async function() {
-    const mnemonic = "dune stem onion cliff equip seek kiwi salute area elegant atom injury";
+    const mnemonic = secret.mnemonic;
     let { 
         privateKey, address, 
         privateKeyBTC, addressBTC, 
