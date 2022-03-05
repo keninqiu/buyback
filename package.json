@@ -19,14 +19,14 @@
     "bs58": "^4.0.1",
     "create-hash": "^1.2.0",
     "crypto-js": "^4.1.1",
-    "eth-lib": "^0.1.29",
     "elliptic": "^6.5.4",
-    "ethers": "^5.4.4",
+    "eth-lib": "^0.1.29",
     "ethereumjs-common": "^1.5.2",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^6.2.1",
     "ethereumjs-wallet": "^1.0.2",
-    
+    "ethers": "^5.4.4",
+    "randombytes": "^2.1.0",
     "web3": "^1.6.1",
     "web3-eth-abi": "^1.6.1"
   }

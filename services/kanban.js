@@ -25,6 +25,8 @@ var BIP39 = require('bip39');
 const bchaddr = require('bchaddrjs');
 const EthereumTx = require('ethereumjs-tx').Transaction;
 const Account = require('eth-lib/lib/account');
+
+const randombytes = require('randombytes');
 /*
 const HttpProvider = TronWeb.providers.HttpProvider;
 const fullNode = new HttpProvider('https://api.trongrid.io');
@@ -79,6 +81,161 @@ if (secret.production) {
 
 module.exports = {
 
+    getBuyBackItem: async () => {
+
+        const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + '7star-buyback/new';
+
+        let item;
+        try {
+            const response = await axios.get(url);
+            const resp = response.data;
+            if(resp.ok) {
+                item = resp._body;
+            }
+
+        }catch (err) {
+        }
+
+
+        return item;
+
+    },
+    submitBuyBackTransaction: async (id, buyBackTxHex) => {
+        const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + '7star-buyback/submit';
+        console.log('url===', url);
+        const data = {
+            id,
+            txhex: buyBackTxHex
+        };
+        console.log('data=', data);
+        let item;
+        try {
+            const response = await axios.post(url, data);
+            const resp = response.data;
+            if(resp.ok) {
+                item = resp._body;
+            }
+
+        }catch (err) {
+        }
+        return item;        
+    },
+    getSellOrders: async (marketPair) => {
+        const url = 'https://kanban' + (secret.production ? 'prod' : 'test') +'.fabcoinapi.com/' + 'publicapi/orderbook/' + marketPair;
+
+        console.log('url====', url);
+        let items;
+        try {
+            const response = await axios.get(url);
+            const resp = response.data;
+            if(resp.success) {
+                items = resp.data.asks;
+            }
+
+        }catch (err) {
+        }
+
+
+        return items;
+    },
+
+    buyTxHex: async (
+        privateKey, 
+        address,
+        targetCoinType, 
+        baseCoinType, 
+        priceBigHex,
+        amountBigHex
+    ) => {
+        const abi = {
+            'constant': false,
+            'inputs': [
+              {
+                'name': '_fromContract',
+                'type': 'bool'
+              },        
+              {
+                'name': '_bid',
+                'type': 'bool'
+              },
+              {
+                'name': '_baseCoin',
+                'type': 'uint32'
+              },
+              {
+                'name': '_targetCoin',
+                'type': 'uint32'
+              },
+              {
+                'name': '_amount',
+                'type': 'uint256'
+              },
+              {
+                'name': '_price',
+                'type': 'uint256'
+              },
+              {
+                'name': '_orderHash',
+                'type': 'bytes32'
+              }
+            ],
+            'name': 'createOrder',
+            'outputs': [
+              {
+                'name': '',
+                'type': 'bytes32'
+              }
+            ],
+            'payable': false,
+            'stateMutability': 'nonpayable',
+            'type': 'function'
+        };
+        const bidOrAsk = true;
+        const orderType = 1;
+        const timeBeforeExpiration = new Date().getTime();
+        const orderHash = module.exports.generateOrderHash(bidOrAsk, orderType, baseCoinType
+            , targetCoinType, amountBigHex, priceBigHex, timeBeforeExpiration);
+        const args = [false, bidOrAsk,
+            baseCoinType, targetCoinType, amountBigHex, priceBigHex, orderHash];
+
+        const abiData = module.exports.getGeneralFunctionABI(abi, args);
+        const exchangeAddress = await module.exports.getExchangeAddress();
+        const txhex = await module.exports.getExecSmartContractHexByData(privateKey, address, exchangeAddress, abiData);
+        //console.log('txhex==', txhex);
+        //const res = await module.exports.sendRawSignedTransactionPromise(txhex);     
+        return txhex;  
+    },
+    
+    getExchangeAddress: async() => {
+        /*
+        const headers = new HttpHeaders().set('Content-Type', 'text/plain; charset=utf-8');
+        let path = 'exchangily/getExchangeAddress';
+        path = this.endpoint + path;
+        const addr = await this.http.get(path, { headers, responseType: 'text' }).toPromise() as string;
+        return addr;
+        */
+        const url = 'https://kanban' + (secret.production ? 'prod' : 'test') +'.fabcoinapi.com/' + 'exchangily/getExchangeAddress';
+
+        console.log('url====', url);
+        let address;
+        try {
+            const response = await axios.get(url);
+            address = response.data;
+
+        }catch (err) {
+        }
+
+
+        return address;
+    },
+
+    generateOrderHash(bidOrAsk, orderType, baseCoin, targetCoin, amount, price, timeBeforeExpiration) {
+        const web3 = new Web3();
+        const randomString = randombytes(32).map(String).join('');
+        const concatString = [bidOrAsk, orderType, baseCoin, targetCoin, amount, price, timeBeforeExpiration, randomString].join('');
+        return web3.utils.sha3(concatString);
+    },
+    
     removeGlobalNonce: () => {
         globalNonce = {};
     },
