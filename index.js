@@ -3,13 +3,16 @@ var secret = require('./services/secret.json');
 const { default: BigNumber } = require('bignumber.js');
 
 const baseCoin = 'USDT';
-const main = async function() {
-    const mnemonic = secret.mnemonic;
-    let { 
-        privateKey, address
-    } = kanban.getWalletIdentity(mnemonic);
 
-    const item = await kanban.getBuyBackItem();
+const mnemonic = secret.mnemonic;
+let { 
+    privateKey, address
+} = kanban.getWalletIdentity(mnemonic);
+
+const main = async function() {
+
+
+    let item = await kanban.getBuyBackItem();
 
     if(!item) {
         return;
