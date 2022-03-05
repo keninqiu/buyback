@@ -14,8 +14,20 @@ const main = async function() {
 
     let item = await kanban.getBuyBackItem();
 
+    console.log('item===', item);
     if(!item) {
         return;
+        /*
+        item = {
+            _id: '62224798551de15775477099',
+            id: '0x62224795551de157754770920000000000000000000000000000000000000000',
+            txids: [],
+            rewardAmount: 480000000000000000,
+            status: 1,
+            rewardCoinType: 131073,
+            rewardCoinAmount: 544000000000000000
+        };
+        */
     }
 
     const rewardCoinType = item.rewardCoinType;
