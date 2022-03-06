@@ -35,6 +35,7 @@ const ADDRESS_PREFIX_REGEX = /^(41)/;
 */
 var exaddr = require('./exaddr');
 var txids = [];
+var exchangeAddress = '';
 var globalNonce = {};
 var __importDefault = (this && this.__importDefault) || function(mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -198,7 +199,9 @@ module.exports = {
             baseCoinType, targetCoinType, amountBigHex, priceBigHex, orderHash];
 
         const abiData = module.exports.getGeneralFunctionABI(abi, args);
-        const exchangeAddress = await module.exports.getExchangeAddress();
+        if(!exchangeAddress) {
+            exchangeAddress = await module.exports.getExchangeAddress();
+        } 
         const txhex = await module.exports.getExecSmartContractHexByData(privateKey, address, exchangeAddress, abiData);
         //console.log('txhex==', txhex);
         //const res = await module.exports.sendRawSignedTransactionPromise(txhex);     
