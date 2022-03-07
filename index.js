@@ -15,7 +15,7 @@ const main = async function() {
     let item = await kanban.getBuyBackItem();
 
     console.log('item===', item);
-    if(!item) {
+    if(!item || !item._id) {
         return;
         /*
         item = {
@@ -55,10 +55,10 @@ const main = async function() {
             '0x' + new BigNumber(price).shiftedBy(18).toString(16),
             '0x' + new BigNumber(rewardCoinAmount).toString(16)
         );
-        const submited = await kanban.submitBuyBackTransaction(item._id, buyBackTxHex);
+        const submited = await kanban.submitBuyBackTransaction(item._id, rewardCoinType, rewardCoinAmount, buyBackTxHex);
         console.log('submited===', submited);
     }
 }
 
-setInterval(main, 10000);
+setInterval(main, 15000);
 

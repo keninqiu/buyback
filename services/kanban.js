@@ -100,11 +100,13 @@ module.exports = {
         return item;
 
     },
-    submitBuyBackTransaction: async (id, buyBackTxHex) => {
+    submitBuyBackTransaction: async (id, rewardCoinType, rewardCoinAmount, buyBackTxHex) => {
         const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + '7star-buyback/submit';
         console.log('url===', url);
         const data = {
             id,
+            rewardCoinType, 
+            rewardCoinAmount,
             txhex: buyBackTxHex
         };
         console.log('data=', data);
