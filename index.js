@@ -2,7 +2,7 @@ const kanban = require('./services/kanban');
 var secret = require('./services/secret.json');
 const { default: BigNumber } = require('bignumber.js');
 
-const baseCoin = 'USDT';
+const baseCoin = 'DUSD';
 
 const mnemonic = secret.mnemonic;
 let { 
