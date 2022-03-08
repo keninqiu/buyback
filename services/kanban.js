@@ -85,6 +85,7 @@ module.exports = {
 
         const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + '7star-buyback/new';
 
+        console.log('url===', url);
         let item;
         try {
             const response = await axios.get(url);
