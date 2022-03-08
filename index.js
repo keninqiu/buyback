@@ -48,14 +48,12 @@ const main = async function() {
     }
 
     if(price > 0 && rewardCoinAmount) {
-        const quantity = Number(new BigNumber(rewardCoinAmount).shiftedBy(-18).toFixed(4));
-
         const buyBackTxHex = await kanban.buyTxHex(
             privateKey, address,
             rewardCoinType, 
             kanban.getCoinTypeIdByName(baseCoin), 
             '0x' + new BigNumber(price).shiftedBy(18).toString(16),
-            '0x' + new BigNumber(quantity).shiftedBy(18).toString(16)
+            '0x' + new BigNumber(rewardCoinAmount).shiftedBy(18).toString(16)
         );
         const submited = await kanban.submitBuyBackTransaction(item._id, rewardCoinType, rewardCoinAmount, buyBackTxHex);
         console.log('submited===', submited);
