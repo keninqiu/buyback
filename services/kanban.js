@@ -101,13 +101,14 @@ module.exports = {
         return item;
 
     },
-    submitBuyBackTransaction: async (id, rewardCoinType, rewardCoinAmount, buyBackTxHex) => {
+    submitBuyBackTransaction: async (id, rewardCoinType, rewardCoinAmount, rewardCoinAmountInLockers, buyBackTxHex) => {
         const url = 'https://' + (secret.production ? 'api' : 'test') + '.blockchaingate.com/v2/' + '7star-buyback/submit';
         console.log('url===', url);
         const data = {
             id,
             rewardCoinType, 
             rewardCoinAmount,
+            rewardCoinAmountInLockers,
             txhex: buyBackTxHex
         };
         console.log('data=', data);
@@ -123,6 +124,7 @@ module.exports = {
         }
         return item;        
     },
+
     getSellOrders: async (marketPair) => {
         const url = 'https://kanban' + (secret.production ? 'prod' : 'test') +'.fabcoinapi.com/' + 'publicapi/orderbook/' + marketPair;
 

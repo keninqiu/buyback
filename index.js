@@ -33,6 +33,7 @@ const main = async function() {
     const rewardCoinType = item.rewardCoinType;
     const rewardCoin = kanban.getCoinNameByTypeId(rewardCoinType);
     const rewardCoinAmount = item.rewardCoinAmount;
+    const rewardCoinAmountInLockers = item.rewardCoinAmountInLockers;
     const sellOrders = await kanban.getSellOrders(rewardCoin + baseCoin);
 
     let price = 0;
@@ -55,7 +56,7 @@ const main = async function() {
             '0x' + new BigNumber(price).shiftedBy(18).toString(16),
             '0x' + new BigNumber(rewardCoinAmount).shiftedBy(18).toString(16)
         );
-        const submited = await kanban.submitBuyBackTransaction(item._id, rewardCoinType, rewardCoinAmount, buyBackTxHex);
+        const submited = await kanban.submitBuyBackTransaction(item._id, rewardCoinType, rewardCoinAmount, rewardCoinAmountInLockers, buyBackTxHex);
         console.log('submited===', submited);
     }
 }
