@@ -301,7 +301,7 @@ module.exports = {
             ETH.hardfork,
         );
     
-        const tx = new service_1.default(txObject, { common: customCommon });
+        const tx = new EthereumTx(txObject, { common: customCommon });
 
         tx.sign(privateKey);
         const serializedTx = tx.serialize();
