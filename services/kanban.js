@@ -1,4 +1,4 @@
-var secret = require('./secret.json');
+const secret = require('./secret.json');
 const feeCharger = require('./feeCharger');
 const axios = require('axios');
 const bs58 = require('bs58');

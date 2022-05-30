@@ -1,5 +1,5 @@
 const kanban = require('./services/kanban');
-var secret = require('./services/secret.json');
+const secret = require('./services/secret.json');
 const { default: BigNumber } = require('bignumber.js');
 
 const baseCoin = 'DUSD';
